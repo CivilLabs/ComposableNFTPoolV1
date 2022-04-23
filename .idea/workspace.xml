@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="0b96d967-dfec-4e1b-9a9a-8dcd3535c0b3" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/contracts/interface/IComposableNFTPool.sol" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/contracts/ComposableFactory.sol" beforeDir="false" afterPath="$PROJECT_DIR$/contracts/ComposableFactory.sol" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/contracts/ComposableMatchMan.sol" beforeDir="false" afterPath="$PROJECT_DIR$/contracts/ComposableMatchMan.sol" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/contracts/ERC721Q.sol" beforeDir="false" afterPath="$PROJECT_DIR$/contracts/token/ERC721Q.sol" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/contracts/IComposableFactory.sol" beforeDir="false" afterPath="$PROJECT_DIR$/contracts/interface/IComposableFactory.sol" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/contracts/IERC721C.sol" beforeDir="false" afterPath="$PROJECT_DIR$/contracts/token/IERC721C.sol" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/contracts/token/ERC721C.sol" beforeDir="false" afterPath="$PROJECT_DIR$/contracts/token/ERC721C.sol" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="28C9Rs44y7nSqg1pJQRjYG0Ehfh" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/contracts" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="prettierjs.PrettierConfiguration.Package" value="$PROJECT_DIR$/node_modules/prettier" />
+    <property name="ts.external.directory.path" value="$PROJECT_DIR$/node_modules/typescript/lib" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/contracts" />
+      <recent name="$PROJECT_DIR$/scripts" />
+      <recent name="$PROJECT_DIR$/test" />
+      <recent name="$PROJECT_DIR$" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/contracts/token" />
+      <recent name="$PROJECT_DIR$/contracts" />
+      <recent name="$PROJECT_DIR$/contracts/interface" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="0b96d967-dfec-4e1b-9a9a-8dcd3535c0b3" name="Changes" comment="" />
+      <created>1650709695470</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1650709695470</updated>
+      <workItem from="1650709696633" duration="4020000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+    <option name="exactExcludedFiles">
+      <list>
+        <option value="$PROJECT_DIR$/hardhat.config.js" />
+      </list>
+    </option>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
