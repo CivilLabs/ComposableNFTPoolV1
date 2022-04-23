@@ -2,15 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0b96d967-dfec-4e1b-9a9a-8dcd3535c0b3" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/contracts/interface/IComposableNFTPool.sol" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/contracts/ComposableFactory.sol" beforeDir="false" afterPath="$PROJECT_DIR$/contracts/ComposableFactory.sol" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/contracts/ComposableMatchMan.sol" beforeDir="false" afterPath="$PROJECT_DIR$/contracts/ComposableMatchMan.sol" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/contracts/ERC721Q.sol" beforeDir="false" afterPath="$PROJECT_DIR$/contracts/token/ERC721Q.sol" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/contracts/IComposableFactory.sol" beforeDir="false" afterPath="$PROJECT_DIR$/contracts/interface/IComposableFactory.sol" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/contracts/IERC721C.sol" beforeDir="false" afterPath="$PROJECT_DIR$/contracts/token/IERC721C.sol" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/contracts/token/ERC721C.sol" beforeDir="false" afterPath="$PROJECT_DIR$/contracts/token/ERC721C.sol" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/contracts/token/Quark.sol" beforeDir="false" afterPath="$PROJECT_DIR$/contracts/token/Quark.sol" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/contracts/ComposableFactory1155.sol" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/contracts/interface/IComposableFactory1155.sol" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/contracts/token/ERC1155C.sol" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/contracts/token/ERC1155Q.sol" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/contracts/token/IDMapping.sol" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/contracts/token/IERC1155C.sol" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/contracts/token/Quark1155.sol" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,24 +29,31 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">
-    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
-    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/contracts" />
-    <property name="nodejs_package_manager_path" value="npm" />
-    <property name="prettierjs.PrettierConfiguration.Package" value="$PROJECT_DIR$/node_modules/prettier" />
-    <property name="ts.external.directory.path" value="$PROJECT_DIR$/node_modules/typescript/lib" />
-    <property name="vue.rearranger.settings.migration" value="true" />
-  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "C:/Users/xeh/Desktop/code/civiland/ComposableNFTPoolV1",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "yarn",
+    "ts.external.directory.path": "C:\\Users\\xeh\\Desktop\\code\\civiland\\ComposableNFTPoolV1\\node_modules\\typescript\\lib",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\xeh\Desktop\code\civiland\ComposableNFTPoolV1" />
+      <recent name="C:\Users\xeh\Desktop\code\civiland\ComposableNFTPoolV1\contracts\token" />
+      <recent name="C:\Users\xeh\Desktop\code\civiland\ComposableNFTPoolV1\contracts" />
       <recent name="$PROJECT_DIR$/contracts" />
       <recent name="$PROJECT_DIR$/scripts" />
-      <recent name="$PROJECT_DIR$/test" />
-      <recent name="$PROJECT_DIR$" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\xeh\Desktop\code\civiland\ComposableNFTPoolV1\contracts\interface" />
       <recent name="$PROJECT_DIR$/contracts/token" />
       <recent name="$PROJECT_DIR$/contracts" />
       <recent name="$PROJECT_DIR$/contracts/interface" />
@@ -61,6 +68,7 @@
       <option name="presentableId" value="Default" />
       <updated>1650709695470</updated>
       <workItem from="1650709696633" duration="4139000" />
+      <workItem from="1650721926982" duration="347000" />
     </task>
     <servers />
   </component>
