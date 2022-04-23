@@ -10,6 +10,7 @@
       <change beforePath="$PROJECT_DIR$/contracts/IComposableFactory.sol" beforeDir="false" afterPath="$PROJECT_DIR$/contracts/interface/IComposableFactory.sol" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/contracts/IERC721C.sol" beforeDir="false" afterPath="$PROJECT_DIR$/contracts/token/IERC721C.sol" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/contracts/token/ERC721C.sol" beforeDir="false" afterPath="$PROJECT_DIR$/contracts/token/ERC721C.sol" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/contracts/token/Quark.sol" beforeDir="false" afterPath="$PROJECT_DIR$/contracts/token/Quark.sol" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,7 +60,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1650709695470</updated>
-      <workItem from="1650709696633" duration="4020000" />
+      <workItem from="1650709696633" duration="4139000" />
     </task>
     <servers />
   </component>

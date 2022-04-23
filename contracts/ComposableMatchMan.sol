@@ -1,7 +1,7 @@
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "./token/ERC721C.sol";
-import "./Quark.sol";
+import "./token/Quark.sol";
 
 contract ComposableMatchMan is ERC721C, ReentrancyGuard {
 
