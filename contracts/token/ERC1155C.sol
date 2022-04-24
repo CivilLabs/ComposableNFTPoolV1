@@ -63,7 +63,7 @@ contract ERC1155C is Context, ERC165, IERC1155, IERC1155C {
     constructor(
         string memory name_,
         string memory symbol_,
-        uint256[] layerConfig_,
+        uint256[] memory layerConfig_,
         uint256 mintSize_,
         address composableFactoryAddress_
     ) {
@@ -78,15 +78,23 @@ contract ERC1155C is Context, ERC165, IERC1155, IERC1155C {
             _collectionSize *= layerConfig_[i];
         }
         _quarkAddress = address(new Quark1155(name_, symbol_, collectionSizeQ));
-        require(IComposableFactory(composableFactoryAddress_).addQToCAddressMapping(_quarkAddress, address(this)),"Join the Pool Failed.");
+        require(IComposableFactory1155 (composableFactoryAddress_).addQToCAddressMapping(_quarkAddress, address(this)),"Join the Pool Failed.");
         composableFactoryAddress = composableFactoryAddress_;
+    }
+
+    function _getCurrentMintIndex() internal view returns(uint256){
+        return _currentMintIndex;
+    }
+
+    function getQuarkAddress() external view returns(address){
+        return _quarkAddress;
     }
 
     function _getQuarkAddress() internal view returns(address){
         return _quarkAddress;
     }
 
-    function getLayerConfig() external view returns(uint256[] memory){
+    function getLayerConfig() external view override returns(uint256[] memory){
         uint256[] memory layerConfig;
         for(int i = 0;i<_layerConfig.length;i++){
             if(_layerConfig[i] != 0){
@@ -96,38 +104,39 @@ contract ERC1155C is Context, ERC165, IERC1155, IERC1155C {
         return layerConfig;
     }
 
-    function factoryMint(address to, uint256 tokenId) external{
+    function factoryMint(address to, uint256 id) external override {
+        require(msg.sender == composableFactoryAddress,"factory mint must called by factory binded");
         require(to != address(0), "ERC1155: mint to the zero address");
 
         address operator = _msgSender();
 
-        _beforeTokenTransfer(operator, address(0), to, _asSingletonArray(id), _asSingletonArray(amount), data);
+        _beforeTokenTransfer(operator, address(0), to, _asSingletonArray(id), _asSingletonArray(1), "");
 
-        _balances[id][to] += amount;
+        _balances[id][to] += 1;
         if(_totalSupply[id] == 0){
             _existIds.push(id);
         }
         _totalSupply[id] += 1;
-        emit TransferSingle(operator, address(0), to, id, amount);
+        emit TransferSingle(operator, address(0), to, id, 1);
 
-        _doSafeTransferAcceptanceCheck(operator, address(0), to, id, amount, data);
+        _doSafeTransferAcceptanceCheck(operator, address(0), to, id, 1, "");
     }
 
-    function burn(address tokenOwner, uint256 tokenId, uint256 amount) external{
+    function burn(address tokenOwner, uint256 tokenId, uint256 amount) external override {
         require(msg.sender == composableFactoryAddress, "only factory can burn");
 
         require(isApprovedForAll(tokenOwner, composableFactoryAddress), "ERC1155C: caller is not approved");
         _burn(tokenOwner, tokenId, amount);
     }
 
-    function burnBatch(address tokenOwner, uint256[] tokenIds, uint256[] amounts) external{
+    function burnBatch(address tokenOwner, uint256[] calldata tokenIds, uint256[] calldata amounts) external override {
         require(msg.sender == composableFactoryAddress, "only factory can burn");
         require(isApprovedForAll(tokenOwner, composableFactoryAddress), "ERC1155C: caller is not approved");
         _burnBatch(tokenOwner, tokenIds, amounts);
     }
 
-    function assetsOf(address account) external view returns(mapping(uint256 => uint256)){
-        mapping(uint256 => uint256) asset;
+    function assetsOf(address account) external view returns(mapping(uint256 => uint256) memory){
+        mapping(uint256 => uint256) memory asset;
         for(uint256 i=0;i<_existIds.length;i++){
             uint256 balance = balanceOf(account, _existIds[i]);
             if(balance != 0){
@@ -140,7 +149,7 @@ contract ERC1155C is Context, ERC165, IERC1155, IERC1155C {
     /**
      * @dev Total amount of tokens in with a given id.
      */
-    function _totalSupply(uint256 id) internal view returns (uint256) {
+    function _getTotalSupply(uint256 id) internal view returns (uint256) {
         return _totalSupply[id];
     }
 
@@ -148,7 +157,7 @@ contract ERC1155C is Context, ERC165, IERC1155, IERC1155C {
      * @dev Indicates whether any token exist with a given id, or not.
      */
     function _exists(uint256 id) internal view returns (bool) {
-        return ERC1155Supply.totalSupply(id) > 0;
+        return _totalSupply[id] > 0;
     }
 
     /**
@@ -159,20 +168,6 @@ contract ERC1155C is Context, ERC165, IERC1155, IERC1155C {
             interfaceId == type(IERC1155).interfaceId ||
             interfaceId == type(IERC1155MetadataURI).interfaceId ||
             super.supportsInterface(interfaceId);
-    }
-
-    /**
-     * @dev See {IERC1155MetadataURI-uri}.
-     *
-     * This implementation returns the same URI for *all* token types. It relies
-     * on the token type ID substitution mechanism
-     * https://eips.ethereum.org/EIPS/eip-1155#metadata[defined in the EIP].
-     *
-     * Clients calling this function must replace the `\{id\}` substring with the
-     * actual token type ID.
-     */
-    function uri(uint256) public view virtual override returns (string memory) {
-        return _uri;
     }
 
     /**

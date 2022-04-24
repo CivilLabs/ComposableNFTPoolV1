@@ -13,7 +13,7 @@ contract Quark1155 is ERC1155Q,Ownable,ReentrancyGuard {
     // metadata URI
     string private _baseTokenURI;
 
-    function _baseURI() internal view virtual override returns (string memory) {
+    function _baseURI() internal view returns (string memory) {
         return _baseTokenURI;
     }
 

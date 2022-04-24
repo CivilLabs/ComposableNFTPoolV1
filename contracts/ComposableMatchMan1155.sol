@@ -2,13 +2,14 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "./token/Quark1155.sol";
 import "./token/ERC1155C.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract ComposableMatchMan is ERC1155C, ReentrancyGuard {
+contract ComposableMatchMan1155 is ERC1155C, ReentrancyGuard, Ownable {
 
     constructor(
         string memory name_,
         string memory symbol_,
-        uint256[] layerConfig_,
+        uint256[] memory layerConfig_,
         uint256 mintSize_,
         address composableFactoryAddress_,
         uint256 mintSequence_
@@ -17,16 +18,16 @@ contract ComposableMatchMan is ERC1155C, ReentrancyGuard {
         mintSequence = mintSequence_;
     }
 
-    uint256[] storage mintSequence;
+    uint256[] mintSequence;
 
     function mint() public payable {
-        _mint(msg.sender, mintSequence[_currentMintIndex], 1,"");
+        _mint(msg.sender, mintSequence[_getCurrentMintIndex()], 1,"");
     }
 
     // metadata URI
     string private _baseTokenURI;
 
-    function _baseURI() internal view virtual override returns (string memory) {
+    function _baseURI() internal view returns (string memory) {
         return _baseTokenURI;
     }
 

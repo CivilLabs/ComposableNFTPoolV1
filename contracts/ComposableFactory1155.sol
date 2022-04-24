@@ -28,23 +28,28 @@ contract ComposableFactory1155 is IERC1155Receiver, IComposableFactory1155 {
         uint256[] calldata ids,
         uint256[] calldata values,
         bytes calldata data
-    ) external returns (bytes4){
+    ) external override returns (bytes4){
         return this.onERC1155BatchReceived.selector;
     }
 
-    function addQToCAddressMapping(address quark, address erc1155c) external returns(bool) {
+    function supportsInterface(bytes4 interfaceId) public view virtual override(IERC165) returns (bool) {
+        return
+        interfaceId == type(IComposableFactory1155).interfaceId;
+    }
+
+    function addQToCAddressMapping(address quark, address erc1155c) external override returns(bool) {
         QToCAddressMapping[quark] = erc1155c;
         CToQAddressMapping[erc1155c] = quark;
         return true;
     }
 
 
-    function quarksOf(address erc1155c, uint256 cId) external view returns(uint256[] memory) {
+    function quarksOf(address erc1155c, uint256 cId) external override view returns(uint256[] memory) {
         // where cId exist, using utils to calculate qids
         return IDMapping.CIDToQIDsMapping(cId,IERC1155C(erc1155c).getLayerConfig());
     }
 
-    function compose(address erc1155q, uint256[] memory qIds) external {
+    function compose(address erc1155q, uint256[] memory qIds) external override {
         address erc1155c = QToCAddressMapping[erc1155q];
         uint256 cid = IDMapping.QIDsToCIDMapping(qIds, IERC1155C(erc1155c).getLayerConfig());
 
@@ -55,15 +60,15 @@ contract ComposableFactory1155 is IERC1155Receiver, IComposableFactory1155 {
         IERC1155C(erc1155c).factoryMint(msg.sender, cid);
     }
 
-    function split(address erc1155c, uint256 cId, uint256 amount) external {
+    function split(address erc1155c, uint256 cId, uint256 amount) external override {
         require(IERC1155(erc1155c).balanceOf(msg.sender,cId) > 0, "you must have this ERC1155C to split");
         IERC1155C(erc1155c).burn(msg.sender, cId, amount);
-        uint256[] qids = IDMapping.CIDToQIDsMapping(cId, IERC1155C(erc1155c).getLayerConfig());
-        uint256[] amounts = new uint256[](qids.length);
-        for(int i = 0;i<qids.length;i++){
-            amounts = amount;
+        uint256[] memory qids = IDMapping.CIDToQIDsMapping(cId, IERC1155C(erc1155c).getLayerConfig());
+        uint256[] memory amounts = new uint256[](qids.length);
+        for(uint256 i = 0;i<qids.length;i++){
+            amounts[i] = amount;
         }
         address erc1155q = CToQAddressMapping[erc1155c];
-        IERC1155(erc1155q).safeBatchTransferFrom(address(this),msg.sender,qids, amounts);
+        IERC1155(erc1155q).safeBatchTransferFrom(address(this),msg.sender,qids, amounts,"");
     }
 }

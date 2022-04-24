@@ -58,7 +58,7 @@ contract ERC1155Q is Context, ERC165, IERC1155 {
         return _name;
     }
 
-    function symbol() public view override returns (string memory) {
+    function symbol() public view returns (string memory) {
         return _symbol;
     }
 
@@ -75,15 +75,15 @@ contract ERC1155Q is Context, ERC165, IERC1155 {
     }
 
     function _safeMintBatch(address to, uint256[] memory tokenIds) internal{
-        uint256[] amounts;
+        uint256[] memory amounts;
         for(int i=0;i<=tokenIds.len;i++){
             amounts.push(1);
         }
         _mintBatch(to, tokenIds, amounts);
     }
 
-    function assetsOf(address account) external view returns(mapping(uint256 => uint256)){
-        mapping(uint256 => uint256) asset;
+    function assetsOf(address account) external view returns(mapping(uint256 => uint256) memory){
+        mapping(uint256 => uint256) memory asset;
         for(uint256 i=0;i<_existIds.length;i++){
             uint256 balance = balanceOf(account, _existIds[i]);
             if(balance != 0){
