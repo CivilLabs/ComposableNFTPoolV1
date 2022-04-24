@@ -13,8 +13,8 @@ import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "../interface/IComposableFactory.sol";
-import "./IERC721C.sol";
 import "./Quark.sol";
+import "./IERC721C.sol";
 
 contract ERC721C is
   Context,
@@ -95,13 +95,12 @@ contract ERC721C is
       "ERC721C: collection must have a nonzero supply"
     );
     require(maxBatchSize_ > 0, "ERC721C: max batch size must be nonzero");
-    require(layerCount_ <= 30,"Layer count set Failed: greater than 30");
     layerCount = layerCount_;
     _name = name_;
     _symbol = symbol_;
     maxBatchSize = maxBatchSize_;
     userMintCollectionSize = userMintCollectionSize_;
-    _quarkAddress = address(new Quark(name_,symbol_, layerCount_, uint256(layerCount_) * userMintCollectionSize_ + 1));
+    _quarkAddress = address(new Quark(name_,symbol_, layerCount_, uint256(layerCount_) * userMintCollectionSize_));
   }
 
   function joinPool(address composableFactoryAddress_) public onlyOwner {
@@ -121,12 +120,10 @@ contract ERC721C is
   function burn(address tokenOwner, uint256 tokenId) external override {
     require(msg.sender == composableFactoryAddress, "only factory can burn");
     TokenOwnership memory prevOwnership = ownershipOf(tokenId);
-    bool isApprovedOrOwner = (tokenOwner == prevOwnership.addr ||
-            getApproved(tokenId) == tokenOwner ||
-            isApprovedForAll(prevOwnership.addr, tokenOwner));
+    bool isApprovedOrOwner = (tokenOwner == prevOwnership.addr
+      && (getApproved(tokenId) == tokenOwner || isApprovedForAll(prevOwnership.addr, composableFactoryAddress)));
 
-    require(isApprovedOrOwner, "ERC721C: caller is not approved or owner");
-    address owner = ownerOf(tokenId);
+    require(isApprovedOrOwner, "ERC721C: caller is not approved or not owner");
     // Clear approvals
     _approve(address(0), tokenId, prevOwnership.addr);
     AddressData memory addressData = _addressData[tokenOwner];
@@ -136,7 +133,7 @@ contract ERC721C is
     );
     _currentCount -= 1;
     _ownerships[tokenId].addr = address(0);
-    emit Transfer(owner, address(0), tokenId);
+    emit Transfer(tokenOwner, address(0), tokenId);
   }
 
   function totalCount() public view returns (uint256) {
@@ -464,10 +461,9 @@ contract ERC721C is
     for (uint256 i = 0; i < quantity; i++) {
       // mint Quarks, add mapping
       Quark(_quarkAddress).cMint(composableFactoryAddress, layerCount);
-      uint256[30] memory tokenIds;
-      for(uint8 j = 0; j < layerCount; j++){
-        // quark start from 1 so need to add 1
-        tokenIds[j] = updatedIndex * layerCount + j + 1;
+      uint256[] memory tokenIds = new uint256[](layerCount);
+      for(uint8 j = 0; j < layerCount; j++) {
+        tokenIds[j] = updatedIndex * layerCount + j;
       }
       IComposableFactory(composableFactoryAddress).addCIdToQuarksMapping(_quarkAddress, updatedIndex, tokenIds);
       emit Transfer(address(0), to, updatedIndex);
@@ -502,8 +498,8 @@ contract ERC721C is
     TokenOwnership memory prevOwnership = ownershipOf(tokenId);
 
     bool isApprovedOrOwner = (_msgSender() == prevOwnership.addr ||
-      getApproved(tokenId) == _msgSender() ||
-      isApprovedForAll(prevOwnership.addr, _msgSender()));
+    getApproved(tokenId) == _msgSender() ||
+    isApprovedForAll(prevOwnership.addr, _msgSender()));
 
     require(
       isApprovedOrOwner,
@@ -575,7 +571,7 @@ contract ERC721C is
   ) private returns (bool) {
     if (to.isContract()) {
       try
-        IERC721Receiver(to).onERC721Received(_msgSender(), from, tokenId, _data)
+      IERC721Receiver(to).onERC721Received(_msgSender(), from, tokenId, _data)
       returns (bytes4 retval) {
         return retval == IERC721Receiver(to).onERC721Received.selector;
       } catch (bytes memory reason) {
