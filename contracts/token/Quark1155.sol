@@ -3,7 +3,7 @@ import "./ERC1155Q.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-contract Quark is ERC1155Q,Ownable,ReentrancyGuard {
+contract Quark1155 is ERC1155Q,Ownable,ReentrancyGuard {
     constructor(
         string memory name,
         string memory symbol,

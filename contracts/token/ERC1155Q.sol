@@ -29,7 +29,10 @@ contract ERC1155Q is Context, ERC165, IERC1155 {
     uint256 private _collectionSize;
 
     // Mapping from token ID to account balances
-    mapping(address => mapping(uint256 => uint256)) private _balances;
+    mapping(uint256 => mapping(address => uint256)) private _balances;
+
+    // exists ids
+    uint256[] private _existIds;
 
     // Mapping from account to operator approvals
     mapping(address => mapping(address => bool)) private _operatorApprovals;
@@ -79,8 +82,15 @@ contract ERC1155Q is Context, ERC165, IERC1155 {
         _mintBatch(to, tokenIds, amounts);
     }
 
-    function assetOf(address account) external view returns(mapping(uint256 => uint256)){
-        return balanceOf[account];
+    function assetsOf(address account) external view returns(mapping(uint256 => uint256)){
+        mapping(uint256 => uint256) asset;
+        for(uint256 i=0;i<_existIds.length;i++){
+            uint256 balance = balanceOf(account, _existIds[i]);
+            if(balance != 0){
+                asset[_existIds[i]] = balance;
+            }
+        }
+        return asset;
     }
 
     /**
@@ -102,7 +112,7 @@ contract ERC1155Q is Context, ERC165, IERC1155 {
      */
     function balanceOf(address account, uint256 id) public view override returns (uint256) {
         require(account != address(0), "ERC1155: balance query for the zero address");
-        return _balances[account][id];
+        return _balances[id][account];
     }
 
     /**
@@ -203,12 +213,12 @@ contract ERC1155Q is Context, ERC165, IERC1155 {
 
         _beforeTokenTransfer(operator, from, to, _asSingletonArray(id), _asSingletonArray(amount), data);
 
-        uint256 fromBalance = _balances[from][id];
+        uint256 fromBalance = _balances[id][from];
         require(fromBalance >= amount, "ERC1155: insufficient balance for transfer");
     unchecked {
-        _balances[from][id] = fromBalance - amount;
+        _balances[id][from] = fromBalance - amount;
     }
-        _balances[to][id] += amount;
+        _balances[id][to] += amount;
 
         emit TransferSingle(operator, from, to, id, amount);
 
@@ -243,12 +253,12 @@ contract ERC1155Q is Context, ERC165, IERC1155 {
             uint256 id = ids[i];
             uint256 amount = amounts[i];
 
-            uint256 fromBalance = _balances[from][id];
+            uint256 fromBalance = _balances[id][from];
             require(fromBalance >= amount, "ERC1155: insufficient balance for transfer");
         unchecked {
-            _balances[from][id] = fromBalance - amount;
+            _balances[id][from] = fromBalance - amount;
         }
-            _balances[to][id] += amount;
+            _balances[id][to] += amount;
         }
 
         emit TransferBatch(operator, from, to, ids, amounts);
@@ -274,12 +284,16 @@ contract ERC1155Q is Context, ERC165, IERC1155 {
         bytes memory data
     ) internal {
         require(to != address(0), "ERC1155Q: mint to the zero address");
+        require(id < _collectionSize,"ERC1155Q: mint id out of bound");
 
         address operator = _msgSender();
 
         _beforeTokenTransfer(operator, address(0), to, _asSingletonArray(id), _asSingletonArray(amount), data);
 
-        _balances[to][id] += amount;
+        _balances[id][to] += amount;
+        if(_totalSupply[id] == 0){
+            _existIds.push(id);
+        }
         _totalSupply[id] += amount;
         emit TransferSingle(operator, address(0), to, id, amount);
 
@@ -309,7 +323,11 @@ contract ERC1155Q is Context, ERC165, IERC1155 {
         _beforeTokenTransfer(operator, address(0), to, ids, amounts, data);
 
         for (uint256 i = 0; i < ids.length; i++) {
-            _balances[to][ids[i]] += amounts[i];
+            require(ids[i] < _collectionSize,"ERC1155Q: mint id out of bound");
+            _balances[ids[i]][to] += amounts[i];
+            if(_totalSupply[ids[i]] == 0){
+                _existIds.push(ids[i]);
+            }
             _totalSupply[ids[i]] += amounts[i];
         }
 
@@ -337,10 +355,10 @@ contract ERC1155Q is Context, ERC165, IERC1155 {
 
         _beforeTokenTransfer(operator, from, address(0), _asSingletonArray(id), _asSingletonArray(amount), "");
 
-        uint256 fromBalance = _balances[from][id];
+        uint256 fromBalance = _balances[id][from];
         require(fromBalance >= amount, "ERC1155: burn amount exceeds balance");
     unchecked {
-        _balances[from][id] = fromBalance - amount;
+        _balances[id][from] = fromBalance - amount;
     }
 
         emit TransferSingle(operator, from, address(0), id, amount);
@@ -369,10 +387,10 @@ contract ERC1155Q is Context, ERC165, IERC1155 {
             uint256 id = ids[i];
             uint256 amount = amounts[i];
 
-            uint256 fromBalance = _balances[from][id];
+            uint256 fromBalance = _balances[id][from];
             require(fromBalance >= amount, "ERC1155: burn amount exceeds balance");
         unchecked {
-            _balances[from][id] = fromBalance - amount;
+            _balances[id][from] = fromBalance - amount;
         }
         }
 

@@ -8,6 +8,8 @@ import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "./IERC1155C.sol";
+import "./Quark1155.sol";
+import "../interface/IComposableFactory1155.sol";
 
 /**
  * @dev Implementation of the basic standard multi-token.
@@ -20,7 +22,7 @@ contract ERC1155C is Context, ERC165, IERC1155, IERC1155C {
     using Address for address;
 
     // Mapping from token ID to account balances
-    mapping(address => mapping(uint256 => uint256)) private _balances;
+    mapping(uint256 => mapping(address => uint256)) private _balances;
 
     // Mapping from account to operator approvals
     mapping(address => mapping(address => bool)) private _operatorApprovals;
@@ -31,20 +33,57 @@ contract ERC1155C is Context, ERC165, IERC1155, IERC1155C {
     // Quark Address bind with ERC1155C
     address private _quarkAddress = address(0);
 
-    // user mint size
-    uint256 internal immutable userMintSize;
-
     // current mint index
-    uint256 private currentMintIndex = 0;
+    uint256 private _currentMintIndex = 0;
 
-    // layer config: layer count should less than 30
-    uint256[30] private _layerConfig;
+    // mint size
+    uint256 private immutable _mintSize;
 
-    /**
-     * @dev See {_setURI}.
-     */
-    constructor(string memory uri_) {
-        _setURI(uri_);
+    // layer config: contains num of
+    uint256[] private _layerConfig;
+
+    // collection name
+    string private _name;
+
+    // collection symbol
+    string private _symbol;
+
+    // collection size
+    uint256 private _collectionSize = 1;
+
+    // total supply for each token
+    mapping(uint256 => uint256) private _totalSupply;
+
+    // exists ids
+    uint256[] private _existIds;
+
+    // composable factory address
+    address composableFactoryAddress = address(0);
+
+    constructor(
+        string memory name_,
+        string memory symbol_,
+        uint256[] layerConfig_,
+        uint256 mintSize_,
+        address composableFactoryAddress_
+    ) {
+        require(mintSize_ > 0, "mint size should be positive");
+        _name = name_;
+        _symbol = symbol_;
+        _layerConfig = layerConfig_;
+        _mintSize = mintSize_;
+        uint256 collectionSizeQ = 0;
+        for(int i = 0;i < layerConfig_.length;i++){
+            collectionSizeQ+=layerConfig_[i]-1;
+            _collectionSize *= layerConfig_[i];
+        }
+        _quarkAddress = address(new Quark1155(name_, symbol_, collectionSizeQ));
+        require(IComposableFactory(composableFactoryAddress_).addQToCAddressMapping(_quarkAddress, address(this)),"Join the Pool Failed.");
+        composableFactoryAddress = composableFactoryAddress_;
+    }
+
+    function _getQuarkAddress() internal view returns(address){
+        return _quarkAddress;
     }
 
     function getLayerConfig() external view returns(uint256[] memory){
@@ -57,12 +96,59 @@ contract ERC1155C is Context, ERC165, IERC1155, IERC1155C {
         return layerConfig;
     }
 
-    function factoryMint(address to) external returns(){
+    function factoryMint(address to, uint256 tokenId) external{
+        require(to != address(0), "ERC1155: mint to the zero address");
 
+        address operator = _msgSender();
+
+        _beforeTokenTransfer(operator, address(0), to, _asSingletonArray(id), _asSingletonArray(amount), data);
+
+        _balances[id][to] += amount;
+        if(_totalSupply[id] == 0){
+            _existIds.push(id);
+        }
+        _totalSupply[id] += 1;
+        emit TransferSingle(operator, address(0), to, id, amount);
+
+        _doSafeTransferAcceptanceCheck(operator, address(0), to, id, amount, data);
     }
 
-    function burn(address tokenOwner, uint256 tokenId) external{
+    function burn(address tokenOwner, uint256 tokenId, uint256 amount) external{
+        require(msg.sender == composableFactoryAddress, "only factory can burn");
 
+        require(isApprovedForAll(tokenOwner, composableFactoryAddress), "ERC1155C: caller is not approved");
+        _burn(tokenOwner, tokenId, amount);
+    }
+
+    function burnBatch(address tokenOwner, uint256[] tokenIds, uint256[] amounts) external{
+        require(msg.sender == composableFactoryAddress, "only factory can burn");
+        require(isApprovedForAll(tokenOwner, composableFactoryAddress), "ERC1155C: caller is not approved");
+        _burnBatch(tokenOwner, tokenIds, amounts);
+    }
+
+    function assetsOf(address account) external view returns(mapping(uint256 => uint256)){
+        mapping(uint256 => uint256) asset;
+        for(uint256 i=0;i<_existIds.length;i++){
+            uint256 balance = balanceOf(account, _existIds[i]);
+            if(balance != 0){
+                asset[_existIds[i]] = balance;
+            }
+        }
+        return asset;
+    }
+
+    /**
+     * @dev Total amount of tokens in with a given id.
+     */
+    function _totalSupply(uint256 id) internal view returns (uint256) {
+        return _totalSupply[id];
+    }
+
+    /**
+     * @dev Indicates whether any token exist with a given id, or not.
+     */
+    function _exists(uint256 id) internal view returns (bool) {
+        return ERC1155Supply.totalSupply(id) > 0;
     }
 
     /**
@@ -253,29 +339,6 @@ contract ERC1155C is Context, ERC165, IERC1155, IERC1155C {
     }
 
     /**
-     * @dev Sets a new URI for all token types, by relying on the token type ID
-     * substitution mechanism
-     * https://eips.ethereum.org/EIPS/eip-1155#metadata[defined in the EIP].
-     *
-     * By this mechanism, any occurrence of the `\{id\}` substring in either the
-     * URI or any of the amounts in the JSON file at said URI will be replaced by
-     * clients with the token type ID.
-     *
-     * For example, the `https://token-cdn-domain/\{id\}.json` URI would be
-     * interpreted by clients as
-     * `https://token-cdn-domain/000000000000000000000000000000000000000000000000000000000004cce0.json`
-     * for token type ID 0x4cce0.
-     *
-     * See {uri}.
-     *
-     * Because these URIs cannot be meaningfully represented by the {URI} event,
-     * this function emits no events.
-     */
-    function _setURI(string memory newuri) internal virtual {
-        _uri = newuri;
-    }
-
-    /**
      * @dev Creates `amount` tokens of token type `id`, and assigns them to `to`.
      *
      * Emits a {TransferSingle} event.
@@ -293,12 +356,18 @@ contract ERC1155C is Context, ERC165, IERC1155, IERC1155C {
         bytes memory data
     ) internal virtual {
         require(to != address(0), "ERC1155: mint to the zero address");
+        require(id != 0,"ERC1155C: mint empty item");
+        require(_currentMintIndex + amount < _mintSize, "ERC1155C: mint reaches max");
 
         address operator = _msgSender();
 
         _beforeTokenTransfer(operator, address(0), to, _asSingletonArray(id), _asSingletonArray(amount), data);
-
         _balances[id][to] += amount;
+        if(_totalSupply[id] == 0){
+            _existIds.push(id);
+        }
+        _totalSupply[id] += amount;
+        _currentMintIndex += amount;
         emit TransferSingle(operator, address(0), to, id, amount);
 
         _doSafeTransferAcceptanceCheck(operator, address(0), to, id, amount, data);
@@ -347,7 +416,7 @@ contract ERC1155C is Context, ERC165, IERC1155, IERC1155C {
         address from,
         uint256 id,
         uint256 amount
-    ) internal virtual {
+    ) internal {
         require(from != address(0), "ERC1155: burn from the zero address");
 
         address operator = _msgSender();
@@ -358,6 +427,7 @@ contract ERC1155C is Context, ERC165, IERC1155, IERC1155C {
         require(fromBalance >= amount, "ERC1155: burn amount exceeds balance");
         unchecked {
             _balances[id][from] = fromBalance - amount;
+            _totalSupply[id] -= amount;
         }
 
         emit TransferSingle(operator, from, address(0), id, amount);
@@ -374,7 +444,7 @@ contract ERC1155C is Context, ERC165, IERC1155, IERC1155C {
         address from,
         uint256[] memory ids,
         uint256[] memory amounts
-    ) internal virtual {
+    ) internal {
         require(from != address(0), "ERC1155: burn from the zero address");
         require(ids.length == amounts.length, "ERC1155: ids and amounts length mismatch");
 
