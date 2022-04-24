@@ -1,7 +1,7 @@
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Burnable.sol";
-import "./IERC1155C.sol";
+import "./token/IERC1155C.sol";
 import "./IDMapping.sol";
 import "hardhat/console.sol";
 import "./interface/IComposableFactory1155.sol";
